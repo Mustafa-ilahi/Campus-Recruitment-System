@@ -8,13 +8,16 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {TextInput} from 'react-native-paper';
-
+import {ActivityIndicator, TextInput} from 'react-native-paper';
+import firebase from '../../config/firebase';
 export default function SignIn({navigation}) {
   const [email, setEmail] = useState();
   const [password, setPassword] = useState();
   const [showPassword, setShowPassword] = useState(true);
   const [eyeIcon, setEyeIcon] = useState('eye-off');
+  const [loader, setLoader] = useState(false);
+  const [error, setError] = useState('');
+  const {auth} = firebase();
 
   const showPasswordValue = () => {
     setShowPassword(!showPassword);
@@ -24,6 +27,24 @@ export default function SignIn({navigation}) {
       setEyeIcon('eye-off');
     }
   };
+
+  const signIn = () => {
+    setLoader(true);
+    try {
+      const signIn = auth()
+        .signInWithEmailAndPassword(email, password)
+        .then(() => {
+          setLoader(false);
+        })
+        .catch(error => {
+          setError(error.message);
+          setLoader(false);
+        });
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.welcomeBackView}>
@@ -55,15 +76,28 @@ export default function SignIn({navigation}) {
       </View>
       <View style={styles.btnView}>
         <View style={styles.button}>
-          <TouchableOpacity>
-            <Text style={styles.btnText}>Sign In</Text>
+          <TouchableOpacity onPress={signIn}>
+            {loader ? (
+              <ActivityIndicator animating={true} color={'#fff'} />
+            ) : (
+              <Text style={styles.btnText}>Sign In</Text>
+            )}
           </TouchableOpacity>
         </View>
       </View>
+      {error !== '' && (
+        <Text style={{color: 'red', fontSize: 12}}>{error}</Text>
+      )}
       <View style={styles.signUpView}>
-          <Text style={styles.signUpText}>Don't have an account? 
-          <Text onPress={()=>navigation.navigate("SignUp")} style={styles.signup}> Sign Up</Text>
-         </Text>
+        <Text style={styles.signUpText}>
+          Don't have an account?
+          <Text
+            onPress={() => navigation.navigate('SignUp')}
+            style={styles.signup}>
+            {' '}
+            Sign Up
+          </Text>
+        </Text>
       </View>
     </View>
   );
@@ -81,7 +115,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#1A202E',
     paddingLeft: 7,
-
   },
   form: {
     paddingTop: 20,
@@ -94,7 +127,6 @@ const styles = StyleSheet.create({
     paddingTop: 10,
     fontSize: 18,
     paddingLeft: 7,
-
   },
   email: {
     borderTopRadius: 12,
@@ -119,7 +151,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderRadius: 5,
   },
-  btnText: {fontSize: 18, textAlign: 'center', color: '#fff',textTransform:"uppercase"},
+  btnText: {
+    fontSize: 18,
+    textAlign: 'center',
+    color: '#fff',
+    textTransform: 'uppercase',
+  },
   signUpView: {paddingTop: 50},
   signUpText: {fontSize: 14, color: '#1A202E'},
   signup: {fontWeight: 'bold'},

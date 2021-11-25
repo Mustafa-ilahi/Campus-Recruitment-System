@@ -9,9 +9,16 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {Button, Divider, Menu, Provider, RadioButton} from 'react-native-paper';
-import {TextInput} from 'react-native-paper';
+import {
+  Menu,
+  Provider,
+  ActivityIndicator,
+  Colors,
+  TextInput,
+} from 'react-native-paper';
 
+import firebase from '../../config/firebase';
+import firestore from '@react-native-firebase/firestore';
 export default function SignUp({navigation}) {
   const [userName, setUserName] = useState();
   const [email, setEmail] = useState();
@@ -20,8 +27,10 @@ export default function SignUp({navigation}) {
   const [eyeIcon, setEyeIcon] = useState('eye-off');
   const [visible, setVisible] = useState(false);
   const [role, setRole] = useState('');
-  const openMenu = () => setVisible(true);
+  const [loader, setLoader] = useState(false);
+  const {auth} = firebase();
 
+  const openMenu = () => setVisible(true);
   const closeMenu = () => setVisible(false);
   const showPasswordValue = () => {
     setShowPassword(!showPassword);
@@ -29,6 +38,29 @@ export default function SignUp({navigation}) {
       setEyeIcon('eye');
     } else {
       setEyeIcon('eye-off');
+    }
+  };
+
+  const createAnAccount = async () => {
+    try {
+      setLoader(true);
+      const signUp = await auth()
+        .createUserWithEmailAndPassword(email, password)
+        .then(() => {
+          firestore()
+            .collection('Users')
+            .add({
+              userName,
+              email,
+              role,
+            })
+            .then(() => {
+              setLoader(false);
+              // navigation.navigate("Home")
+            });
+        });
+    } catch (error) {
+      console.log(error);
     }
   };
   return (
@@ -74,7 +106,7 @@ export default function SignUp({navigation}) {
             <Menu
               style={{position: 'absolute', top: 250, left: 120}}
               visible={visible}
-              onDismiss={() => Alert.alert('ok')}
+              onDismiss={closeMenu}
               anchor={
                 <TouchableOpacity onPress={openMenu}>
                   {role !== '' ? (
@@ -109,17 +141,25 @@ export default function SignUp({navigation}) {
 
       <View style={{paddingTop: visible ? 200 : 50}}>
         <View style={styles.createAccountBtn}>
-          <TouchableOpacity>
-            <Text style={styles.createAccountBtnText}>Create an account</Text>
+          <TouchableOpacity onPress={createAnAccount}>
+            {loader ? (
+              <ActivityIndicator animating={true} color={'#fff'} />
+            ) : (
+              <Text style={styles.createAccountBtnText}>Create an account</Text>
+            )}
           </TouchableOpacity>
         </View>
       </View>
 
       <View>
-          <Text style={styles.alreadyMember}>
-            Already have an account?{' '}
-            <Text onPress={() => navigation.navigate('SignIn')} style={styles.signin}>Sign in</Text>
+        <Text style={styles.alreadyMember}>
+          Already have an account?{' '}
+          <Text
+            onPress={() => navigation.navigate('SignIn')}
+            style={styles.signin}>
+            Sign in
           </Text>
+        </Text>
       </View>
       <View style={styles.footerView}>
         <Text style={styles.footerText}>
@@ -143,7 +183,7 @@ const styles = StyleSheet.create({
     fontSize: 35,
     fontWeight: 'bold',
     color: '#1A202E',
-    paddingLeft:7
+    paddingLeft: 7,
   },
   form: {
     width: '95%',
@@ -155,7 +195,6 @@ const styles = StyleSheet.create({
     paddingTop: 10,
     fontSize: 18,
     paddingLeft: 7,
-  
   },
   userName: {
     borderTopRadius: 12,
