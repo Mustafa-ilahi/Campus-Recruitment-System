@@ -1,23 +1,19 @@
 import React from 'react';
 import {StyleSheet, Text, View} from 'react-native';
-import SignIn from './src/components/SignIn';
-import SignUp from './src/components/SignUp';
-import Admin from './src/components/Admin';
-import Student from './src/components/Student';
-import Company from './src/components/Company';
-import Home from './src/components/Home';
+import {Provider} from 'react-redux';
+import store from './src/store';
+import { persistor} from './src/store';
+import {PersistGate} from 'redux-persist/integration/react';
 import MainNavigator from './src/config/navigation';
 export default function App() {
   return (
-    <View style={styles.container}>
-      <MainNavigator />
-      {/* <Home /> */}
-      {/* <SignIn /> */}
-      {/* <SignUp /> */}
-      {/* <Admin /> */}
-      {/* <Student /> */}
-      {/* <Company /> */}
-    </View>
+    <Provider store={store}>
+      <PersistGate loading={null} persistor={persistor}>
+        <View style={styles.container}>
+          <MainNavigator />
+        </View>
+      </PersistGate>
+    </Provider>
   );
 }
 const styles = StyleSheet.create({

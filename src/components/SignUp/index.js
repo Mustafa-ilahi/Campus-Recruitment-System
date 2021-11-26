@@ -16,9 +16,11 @@ import {
   Colors,
   TextInput,
 } from 'react-native-paper';
-
+import {useDispatch} from 'react-redux';
 import firebase from '../../config/firebase';
 import firestore from '@react-native-firebase/firestore';
+import {storeData} from '../../store/action';
+
 export default function SignUp({navigation}) {
   const [userName, setUserName] = useState('');
   const [email, setEmail] = useState('');
@@ -31,6 +33,7 @@ export default function SignUp({navigation}) {
   const [error, setError] = useState('');
 
   const {auth} = firebase();
+  const dispatch = useDispatch();
 
   const openMenu = () => setVisible(true);
   const closeMenu = () => setVisible(false);
@@ -50,6 +53,7 @@ export default function SignUp({navigation}) {
         const signUp = await auth()
           .createUserWithEmailAndPassword(email, password)
           .then(() => {
+            dispatch(storeData(role, email));
             firestore()
               .collection('Users')
               .add({
@@ -59,7 +63,13 @@ export default function SignUp({navigation}) {
               })
               .then(() => {
                 setLoader(false);
-                // navigation.navigate("Home")
+                if (role === 'Admin') {
+                  navigation.navigate('Admin');
+                } else if (role === 'Student') {
+                  navigation.navigate('Student');
+                } else if (role === 'Company') {
+                  navigation.navigate('Company');
+                }
               });
           });
       } else if (userName == '') {
@@ -159,7 +169,13 @@ export default function SignUp({navigation}) {
       <View style={{paddingTop: visible ? 200 : 50}}>
         <View style={{marginBottom: 10}}>
           {error !== '' && (
-            <Text style={{color: 'red', fontSize: 12, textAlign: 'left',paddingLeft:5}}>
+            <Text
+              style={{
+                color: 'red',
+                fontSize: 12,
+                textAlign: 'left',
+                paddingLeft: 5,
+              }}>
               {error}
             </Text>
           )}

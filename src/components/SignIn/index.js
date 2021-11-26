@@ -1,14 +1,10 @@
-import React, {useState} from 'react';
-import {
-  Alert,
-  Image,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {ActivityIndicator, TextInput} from 'react-native-paper';
 import firebase from '../../config/firebase';
+import firestore from '@react-native-firebase/firestore';
+import {storeData} from '../../store/action';
+import {useDispatch} from 'react-redux';
 export default function SignIn({navigation}) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -17,6 +13,7 @@ export default function SignIn({navigation}) {
   const [loader, setLoader] = useState(false);
   const [error, setError] = useState('');
   const {auth} = firebase();
+  const dispatch = useDispatch();
 
   const showPasswordValue = () => {
     setShowPassword(!showPassword);
@@ -35,6 +32,15 @@ export default function SignIn({navigation}) {
           .signInWithEmailAndPassword(email, password)
           .then(() => {
             setLoader(false);
+            let data = firestore()
+              .collection('Users')
+              .where('email', '==', email)
+              .get()
+              .then(snapshot => {
+                snapshot.forEach(item => {
+                  dispatch(storeData(item.data().role, item.data().email));
+                });
+              });
           })
           .catch(error => {
             setError(error.message.split(']')[1]);
