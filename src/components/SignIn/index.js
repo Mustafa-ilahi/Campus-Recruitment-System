@@ -4,15 +4,14 @@ import {
   Image,
   StyleSheet,
   Text,
-  Touchable,
   TouchableOpacity,
   View,
 } from 'react-native';
 import {ActivityIndicator, TextInput} from 'react-native-paper';
 import firebase from '../../config/firebase';
 export default function SignIn({navigation}) {
-  const [email, setEmail] = useState();
-  const [password, setPassword] = useState();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(true);
   const [eyeIcon, setEyeIcon] = useState('eye-off');
   const [loader, setLoader] = useState(false);
@@ -31,17 +30,25 @@ export default function SignIn({navigation}) {
   const signIn = () => {
     setLoader(true);
     try {
-      const signIn = auth()
-        .signInWithEmailAndPassword(email, password)
-        .then(() => {
-          setLoader(false);
-        })
-        .catch(error => {
-          setError(error.message);
-          setLoader(false);
-        });
-    } catch (err) {
-      console.log(err);
+      if (email !== '' && password !== '') {
+        const signIn = auth()
+          .signInWithEmailAndPassword(email, password)
+          .then(() => {
+            setLoader(false);
+          })
+          .catch(error => {
+            setError(error.message.split(']')[1]);
+            setLoader(false);
+          });
+      } else if (email == '') {
+        setError('Email is required');
+        setLoader(false);
+      } else if (password == '') {
+        setError('Password is required');
+        setLoader(false);
+      }
+    } catch (error) {
+      console.log(error.message);
     }
   };
 
@@ -70,6 +77,19 @@ export default function SignIn({navigation}) {
           style={styles.password}
           underlineColor="transparent"
         />
+        <View style={{marginTop: 10}}>
+          {error !== '' && (
+            <Text
+              style={{
+                color: 'red',
+                fontSize: 12,
+                textAlign: 'left',
+                paddingLeft: 5,
+              }}>
+              {error}
+            </Text>
+          )}
+        </View>
         <TouchableOpacity>
           <Text style={styles.forgotPassword}>Forgot Password?</Text>
         </TouchableOpacity>
@@ -85,9 +105,7 @@ export default function SignIn({navigation}) {
           </TouchableOpacity>
         </View>
       </View>
-      {error !== '' && (
-        <Text style={{color: 'red', fontSize: 12}}>{error}</Text>
-      )}
+
       <View style={styles.signUpView}>
         <Text style={styles.signUpText}>
           Don't have an account?

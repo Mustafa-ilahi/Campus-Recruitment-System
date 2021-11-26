@@ -20,14 +20,16 @@ import {
 import firebase from '../../config/firebase';
 import firestore from '@react-native-firebase/firestore';
 export default function SignUp({navigation}) {
-  const [userName, setUserName] = useState();
-  const [email, setEmail] = useState();
-  const [password, setPassword] = useState();
+  const [userName, setUserName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(true);
   const [eyeIcon, setEyeIcon] = useState('eye-off');
   const [visible, setVisible] = useState(false);
   const [role, setRole] = useState('');
   const [loader, setLoader] = useState(false);
+  const [error, setError] = useState('');
+
   const {auth} = firebase();
 
   const openMenu = () => setVisible(true);
@@ -44,23 +46,38 @@ export default function SignUp({navigation}) {
   const createAnAccount = async () => {
     try {
       setLoader(true);
-      const signUp = await auth()
-        .createUserWithEmailAndPassword(email, password)
-        .then(() => {
-          firestore()
-            .collection('Users')
-            .add({
-              userName,
-              email,
-              role,
-            })
-            .then(() => {
-              setLoader(false);
-              // navigation.navigate("Home")
-            });
-        });
+      if (userName !== '' && email !== '' && password !== '' && role !== '') {
+        const signUp = await auth()
+          .createUserWithEmailAndPassword(email, password)
+          .then(() => {
+            firestore()
+              .collection('Users')
+              .add({
+                userName,
+                email,
+                role,
+              })
+              .then(() => {
+                setLoader(false);
+                // navigation.navigate("Home")
+              });
+          });
+      } else if (userName == '') {
+        setError('Username is required');
+        setLoader(false);
+      } else if (email == '') {
+        setError('Email is required');
+        setLoader(false);
+      } else if (password == '') {
+        setError('Password is required');
+        setLoader(false);
+      } else if (role == '') {
+        setError('Role is required');
+        setLoader(false);
+      }
     } catch (error) {
-      console.log(error);
+      setError(error.message.split(']')[1]);
+      setLoader(false);
     }
   };
   return (
@@ -140,6 +157,13 @@ export default function SignUp({navigation}) {
       </View>
 
       <View style={{paddingTop: visible ? 200 : 50}}>
+        <View style={{marginBottom: 10}}>
+          {error !== '' && (
+            <Text style={{color: 'red', fontSize: 12, textAlign: 'left',paddingLeft:5}}>
+              {error}
+            </Text>
+          )}
+        </View>
         <View style={styles.createAccountBtn}>
           <TouchableOpacity onPress={createAnAccount}>
             {loader ? (
