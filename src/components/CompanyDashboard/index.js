@@ -3,8 +3,8 @@ import {View, Text, Button} from 'react-native';
 import {removeData} from '../../store/action';
 import {useDispatch} from 'react-redux';
 import {useSelector} from 'react-redux';
-export default function Dashboard({navigation}) {
-  //   const data = useSelector(state => console.log(state));
+
+export default function CompanyDashboard({navigation}) {
   const dispatch = useDispatch();
 
   const clickMe = () => {
@@ -15,8 +15,8 @@ export default function Dashboard({navigation}) {
   };
   return (
     <View>
-      <Text>Dashboard here</Text>
-      <Button title="Click me" onPress={clickMe} />
+      <Text>Company Dashboard here</Text>
+      <Button title="Sign Out" onPress={clickMe} />
     </View>
   );
 }

@@ -2,16 +2,19 @@ import React, {useState} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {useSelector} from 'react-redux';
+import {createDrawerNavigator} from '@react-navigation/drawer';
 
 import Home from '../components/Home';
 import SignUp from '../components/SignUp';
 import SignIn from '../components/SignIn';
-import Student from '../components/Student';
-import Admin from '../components/Admin';
-import Company from '../components/Company';
-import Dashboard from '../components/Dashboard';
+// import Student from '../components/Student';
+import CompanyDashboard from '../components/CompanyDashboard';
+import StudentDashboard from '../components/StudentDashboard';
+import AdminDashboard from '../components/AdminDashboard';
+import {Button} from 'react-native-paper';
 
 const Stack = createNativeStackNavigator();
+const Drawer = createDrawerNavigator();
 
 export default function MainNavigator() {
   const isSignedIn = useSelector(state => state.email);
@@ -21,15 +24,14 @@ export default function MainNavigator() {
     <NavigationContainer>
       <Stack.Navigator screenOptions={{headerShown: false}}>
         {isSignedIn ? (
-          // <Stack.Screen name="Dashboard" component={Dashboard} />
-          // {
           selectedRole === 'Admin' ? (
-            <Stack.Screen name="Admin" component={Admin} />
-          ) : // }
-          selectedRole === 'Student' ? (
-            <Stack.Screen name="Student" component={Student} />
+            <Stack.Screen name="AdminDrawer" component={AdminDrawer} />
+          ) : selectedRole === 'Student' ? (
+            <>
+              <Stack.Screen name="StudentDrawer" component={StudentDrawer} />
+            </>
           ) : (
-            <Stack.Screen name="Company" component={Company} />
+            <Stack.Screen name="CompanyDrawer" component={CompanyDrawer} />
           )
         ) : (
           <Stack.Screen name="Auth" component={AuthNavigator} />
@@ -46,5 +48,29 @@ function AuthNavigator() {
       <Stack.Screen name="SignIn" component={SignIn} />
       <Stack.Screen name="SignUp" component={SignUp} />
     </Stack.Navigator>
+  );
+}
+
+function StudentDrawer() {
+  return (
+    <Drawer.Navigator>
+      <Drawer.Screen name="Dashboard" component={StudentDashboard} />
+    </Drawer.Navigator>
+  );
+}
+
+function AdminDrawer() {
+  return (
+    <Drawer.Navigator>
+      <Drawer.Screen name="Dashboard" component={AdminDashboard} />
+    </Drawer.Navigator>
+  );
+}
+
+function CompanyDrawer() {
+  return (
+    <Drawer.Navigator>
+      <Drawer.Screen name="Dashboard" component={CompanyDashboard} />
+    </Drawer.Navigator>
   );
 }
