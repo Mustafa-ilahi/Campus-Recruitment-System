@@ -11,7 +11,7 @@ import SignIn from '../components/SignIn';
 import CompanyDashboard from '../components/CompanyDashboard';
 import StudentDashboard from '../components/StudentDashboard';
 import AdminDashboard from '../components/AdminDashboard';
-import {Button} from 'react-native-paper';
+import StudentDetails from '../components/StudentDetails';
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -51,14 +51,6 @@ function AuthNavigator() {
   );
 }
 
-function StudentDrawer() {
-  return (
-    <Drawer.Navigator>
-      <Drawer.Screen name="Dashboard" component={StudentDashboard} />
-    </Drawer.Navigator>
-  );
-}
-
 function AdminDrawer() {
   return (
     <Drawer.Navigator>
@@ -67,6 +59,14 @@ function AdminDrawer() {
   );
 }
 
+function StudentDrawer() {
+  return (
+    <Drawer.Navigator screenOptions={{headerShown:false}}>
+      <Drawer.Screen name="Dashboard" component={StudentDashboard} />
+      <Drawer.Screen name="Create Profile" component={StudentDetails} />
+    </Drawer.Navigator>
+  );
+}
 function CompanyDrawer() {
   return (
     <Drawer.Navigator>
