@@ -1,29 +1,26 @@
 import React, {useState} from 'react';
 import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import {Button, TextInput} from 'react-native-paper';
+import {ActivityIndicator, Button, TextInput} from 'react-native-paper';
 import DocumentPicker from 'react-native-document-picker';
 import firestore from '@react-native-firebase/firestore';
-// import RNFetchBlob from 'rn-fetch-blob';
 export default function StudentDetails() {
   const [documentName, setDocumentName] = useState('');
   const [documentUri, setDocumentUri] = useState('');
+  const [fullName, setFullName] = useState('');
+  const [qualification, setQualification] = useState('');
+  const [marks, setMarks] = useState('');
+  const [loader, setLoader] = useState(false);
+  const [error, setError] = useState('');
   const selectDocument = async () => {
     try {
       const res = await DocumentPicker.pick({
-        type: [DocumentPicker.types.allFiles],
+        type: [DocumentPicker.types.pdf],
       });
       setDocumentName(res[0].name);
       setDocumentUri(res[0].uri);
       console.log(res[0]);
-      //   const storageRef = storage.ref(`resumes/${res[0].name}`);
-      //   await storageRef.put(res[0]);
-      //   const url = await storageRef.getDownloadURL();
-      //   console.log(url);
       const path = res[0].uri;
-      console.log("path",path);
-      
-    //   const result =  await RNFetchBlob.fs.readFile(path, 'base64');
-    //   console.log(result);
+      console.log('path', path);
     } catch (err) {
       if (DocumentPicker.isCancel(err)) {
         // User cancelled the picker, exit any dialogs or menus and move on
@@ -33,6 +30,32 @@ export default function StudentDetails() {
     }
   };
 
+  const addDetails = () => {
+    setLoader(true);
+    if (
+      fullName !== '' &&
+      qualification !== '' &&
+      marks !== '' &&
+      documentName !== ''
+    ) {
+      setError('')
+      setLoader(false);
+    } else if (fullName == '') {
+      setError('Full Name is required');
+      setLoader(false);
+    } else if (qualification == '') {
+      setError('Qualification is required');
+      setLoader(false);
+    } else if (marks == '') {
+      setError('Marks is required');
+      setLoader(false);
+    } else if (documentName == '') {
+      setError('Resume is required');
+      setLoader(false);
+    }
+    
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.createProfile}>Create Profile</Text>
@@ -40,7 +63,7 @@ export default function StudentDetails() {
         <TextInput
           label="Full Name"
           activeUnderlineColor="#000"
-          //   onChangeText={text => setUserName(text)}
+          onChangeText={text => setFullName(text)}
           //   value={userName}
           //   style={styles.userName}
           underlineColor="transparent"
@@ -49,7 +72,7 @@ export default function StudentDetails() {
         <TextInput
           label="Qualification"
           activeUnderlineColor="#000"
-          //   onChangeText={text => setUserName(text)}
+          onChangeText={text => setQualification(text)}
           //   value={userName}
           style={styles.qualification}
           underlineColor="transparent"
@@ -57,7 +80,7 @@ export default function StudentDetails() {
         <TextInput
           label="Marks"
           activeUnderlineColor="#000"
-          //   onChangeText={text => setUserName(text)}
+          onChangeText={text => setMarks(text)}
           //   value={userName}
           //   style={styles.userName}
           underlineColor="transparent"
@@ -72,15 +95,27 @@ export default function StudentDetails() {
             Upload Resume
           </Button>
         </View>
+        <View style={{marginTop: 10}}>
+          {error !== '' && (
+            <Text
+              style={{
+                color: 'red',
+                fontSize: 12,
+                textAlign: 'left',
+                paddingLeft: 5,
+              }}>
+              {error}
+            </Text>
+          )}
+        </View>
       </View>
       <View style={styles.addDetails}>
-        <TouchableOpacity>
-          {/* {loader ? (
-              <ActivityIndicator animating={true} color={'#fff'} />
-            ) : ( */}
-          <Text style={styles.addDetailsText}>Add Details</Text>
-          {/* )
-            } */}
+        <TouchableOpacity onPress={addDetails}>
+          {loader ? (
+            <ActivityIndicator animating={true} color={'#fff'} />
+          ) : (
+            <Text style={styles.addDetailsText}>Add Details</Text>
+          )}
         </TouchableOpacity>
       </View>
     </View>
