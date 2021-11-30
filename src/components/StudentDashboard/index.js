@@ -1,23 +1,23 @@
 import React from 'react';
-import {View, Text, Button} from 'react-native';
-import {removeData} from '../../store/action';
-import {useDispatch} from 'react-redux';
-import {useSelector} from 'react-redux';
+import {View, Text, Button, StyleSheet, TouchableOpacity} from 'react-native';
 
 export default function StudentDashboard({navigation}) {
-  //   const data = useSelector(state => console.log(state));
-  const dispatch = useDispatch();
-
-  const clickMe = () => {
-    dispatch(removeData());
-    setTimeout(() => {
-      navigation.navigate('Auth');
-    }, 2000);
-  };
   return (
-    <View>
-      <Text>Student Dashboard here</Text>
-      <Button title="Sign Out" onPress={clickMe} />
+    <View style={styles.container}>
+      <Text style={styles.studentText}>Student Dashboard </Text>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    flex: 1,
+  },
+  studentText:{
+    fontSize:18,
+    color: '#1A202E',
+
+  },
+});

@@ -7,11 +7,11 @@ import {createDrawerNavigator} from '@react-navigation/drawer';
 import Home from '../components/Home';
 import SignUp from '../components/SignUp';
 import SignIn from '../components/SignIn';
-// import Student from '../components/Student';
 import CompanyDashboard from '../components/CompanyDashboard';
 import StudentDashboard from '../components/StudentDashboard';
 import AdminDashboard from '../components/AdminDashboard';
 import StudentDetails from '../components/StudentDetails';
+import DrawerContent from '../components/DrawerContent';
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -53,24 +53,24 @@ function AuthNavigator() {
 
 function AdminDrawer() {
   return (
-    <Drawer.Navigator>
-      <Drawer.Screen name="Dashboard" component={AdminDashboard} />
+    <Drawer.Navigator drawerContent={props => <DrawerContent {...props}/>}>
+      <Drawer.Screen name="Admin Dashboard" component={AdminDashboard} />
     </Drawer.Navigator>
   );
 }
 
 function StudentDrawer() {
   return (
-    <Drawer.Navigator screenOptions={{headerShown:false}}>
-      <Drawer.Screen name="Dashboard" component={StudentDashboard} />
+    <Drawer.Navigator drawerContent={props => <DrawerContent {...props}/>}>
+      <Drawer.Screen name="Student Dashboard" component={StudentDashboard} />
       <Drawer.Screen name="Create Profile" component={StudentDetails} />
     </Drawer.Navigator>
   );
 }
 function CompanyDrawer() {
   return (
-    <Drawer.Navigator>
-      <Drawer.Screen name="Dashboard" component={CompanyDashboard} />
+    <Drawer.Navigator drawerContent={props => <DrawerContent {...props}/>}>
+      <Drawer.Screen name="Company Dashboard" component={CompanyDashboard} />
     </Drawer.Navigator>
   );
 }
