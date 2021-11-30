@@ -2,9 +2,8 @@ import React, {useState} from 'react';
 import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {Button, TextInput} from 'react-native-paper';
 import DocumentPicker from 'react-native-document-picker';
-import {storage} from '../../config/firebase';
 import firestore from '@react-native-firebase/firestore';
-import RNFetchBlob from 'rn-fetch-blob';
+// import RNFetchBlob from 'rn-fetch-blob';
 export default function StudentDetails() {
   const [documentName, setDocumentName] = useState('');
   const [documentUri, setDocumentUri] = useState('');
@@ -22,8 +21,9 @@ export default function StudentDetails() {
       //   console.log(url);
       const path = res[0].uri;
       console.log("path",path);
-      const result =  await RNFetchBlob.fs.readFile(path, 'base64');
-      console.log(result);
+      
+    //   const result =  await RNFetchBlob.fs.readFile(path, 'base64');
+    //   console.log(result);
     } catch (err) {
       if (DocumentPicker.isCancel(err)) {
         // User cancelled the picker, exit any dialogs or menus and move on
