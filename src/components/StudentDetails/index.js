@@ -4,7 +4,8 @@ import {ActivityIndicator, Button, TextInput} from 'react-native-paper';
 import DocumentPicker from 'react-native-document-picker';
 import firestore from '@react-native-firebase/firestore';
 import storage from '@react-native-firebase/storage';
-
+import RNFetchBlob from 'rn-fetch-blob';
+import FilePickerManager from 'react-native-file-picker';
 export default function StudentDetails() {
   const [documentName, setDocumentName] = useState('');
   const [documentUri, setDocumentUri] = useState('');
@@ -15,30 +16,56 @@ export default function StudentDetails() {
   const [error, setError] = useState('');
 
   const selectDocument = async () => {
-    try {
-      const res = await DocumentPicker.pick({
-        type: [DocumentPicker.types.pdf],
-      });
-      setDocumentName(res[0].name);
-      setDocumentUri(res[0].uri);
-      console.log(res[0]);
+    FilePickerManager.showFilePicker(null, async response => {
+      console.log('Response = ', response);
+      setDocumentName(response.fileName);
+      setDocumentUri(response.uri);
 
-      const task = storage().ref(res[0].name).putFile(res[0].uri);
-
-      try {
-        await task;
-      } catch (error) {
-        console.error(e);
+      const result = await RNFetchBlob.fs.readFile(response.uri, 'base64');
+      // console.log(result);
+      uploadFileToFirebaseStorage(result, response);
+      if (response.didCancel) {
+        console.log('User cancelled file picker');
+      } else if (response.error) {
+        console.log('FilePickerManager Error: ', response.error);
       }
-    } catch (err) {
-      if (DocumentPicker.isCancel(err)) {
-        // User cancelled the picker, exit any dialogs or menus and move on
-      } else {
-        throw err;
-      }
-    }
+    });
   };
 
+  const uploadFileToFirebaseStorage = async (result, response) => {
+    const uploadTask = storage()
+      .ref(`resumes/${response.fileName}`)
+      .putString(result, 'base64', {contentType: response.type});
+
+    uploadTask.on(
+      'state_changed',
+      snapshot => {
+        const progress =
+          (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        console.log('Upload is ' + progress + '% done');
+        switch (snapshot.state) {
+          case 'paused':
+            console.log('Upload is paused');
+            break;
+          case 'running':
+            console.log('Upload is running');
+            break;
+        }
+      },
+      error => {
+        console.log(error);
+      },
+      () => {
+        getDownloadURL(uploadTask.snapshot.ref).then(downloadURL => {
+          saveFileToRealtimeDatabase(downloadURL, response);
+        });
+      },
+    );
+  };
+
+  const saveFileToRealtimeDatabase = (downloadURL, response) => {
+    
+  };
   const addDetails = () => {
     setLoader(true);
     if (
@@ -50,7 +77,7 @@ export default function StudentDetails() {
       setError('');
       setLoader(false);
     } else if (fullName == '') {
-      setError('Full Name is required');
+      setError('Name is required');
       setLoader(false);
     } else if (qualification == '') {
       setError('Qualification is required');
