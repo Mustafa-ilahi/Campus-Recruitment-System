@@ -1,19 +1,24 @@
 import React, {useState} from 'react';
 import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {ActivityIndicator, Button, TextInput} from 'react-native-paper';
-import DocumentPicker from 'react-native-document-picker';
 import firestore from '@react-native-firebase/firestore';
 import storage from '@react-native-firebase/storage';
 import RNFetchBlob from 'rn-fetch-blob';
 import FilePickerManager from 'react-native-file-picker';
-export default function StudentDetails() {
+import {useSelector} from 'react-redux';
+
+export default function StudentDetails({navigation}) {
   const [documentName, setDocumentName] = useState('');
   const [documentUri, setDocumentUri] = useState('');
   const [fullName, setFullName] = useState('');
   const [qualification, setQualification] = useState('');
   const [marks, setMarks] = useState('');
   const [loader, setLoader] = useState(false);
+  const [uploadLoader, setUploadLoader] = useState(false);
   const [error, setError] = useState('');
+  const [downloadUrl, setDownloadUrl] = useState('');
+  const [selectedDocument, setSelectedDocument] = useState('');
+  const isSignedIn = useSelector(state => state.email);
 
   const selectDocument = async () => {
     FilePickerManager.showFilePicker(null, async response => {
@@ -22,7 +27,6 @@ export default function StudentDetails() {
       setDocumentUri(response.uri);
 
       const result = await RNFetchBlob.fs.readFile(response.uri, 'base64');
-      // console.log(result);
       uploadFileToFirebaseStorage(result, response);
       if (response.didCancel) {
         console.log('User cancelled file picker');
@@ -42,7 +46,13 @@ export default function StudentDetails() {
       snapshot => {
         const progress =
           (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+
         console.log('Upload is ' + progress + '% done');
+        if (progress !== 100) {
+          setUploadLoader(true);
+        } else {
+          setUploadLoader(false);
+        }
         switch (snapshot.state) {
           case 'paused':
             console.log('Upload is paused');
@@ -56,16 +66,15 @@ export default function StudentDetails() {
         console.log(error);
       },
       () => {
-        getDownloadURL(uploadTask.snapshot.ref).then(downloadURL => {
-          saveFileToRealtimeDatabase(downloadURL, response);
-        });
+        setSelectedDocument(response);
+        let uri = storage()
+          .ref(`resumes/${response.fileName}`)
+          .getDownloadURL()
+          .then(res => setDownloadUrl(res));
       },
     );
   };
 
-  const saveFileToRealtimeDatabase = (downloadURL, response) => {
-    
-  };
   const addDetails = () => {
     setLoader(true);
     if (
@@ -76,6 +85,23 @@ export default function StudentDetails() {
     ) {
       setError('');
       setLoader(false);
+
+      if (downloadUrl !== '' && selectedDocument !== '') {
+        firestore()
+          .collection('StudentDetails')
+          .add({
+            name: fullName,
+            qualification: qualification,
+            marks: marks,
+            email: isSignedIn,
+            fileName: selectedDocument.fileName,
+            fileType: selectedDocument.type,
+            fileURL: downloadUrl,
+          })
+          .then(() => {
+            navigation.navigate('Student Dashboard');
+          });
+      }
     } else if (fullName == '') {
       setError('Name is required');
       setLoader(false);
@@ -113,16 +139,23 @@ export default function StudentDetails() {
         />
         <TextInput
           label="Marks"
+          keyboardType="numeric"
           activeUnderlineColor="#000"
           onChangeText={text => setMarks(text)}
           value={marks}
           underlineColor="transparent"
         />
-        <View style={styles.uploadResumeView}>
+        <View style={styles.fileName}>
           {documentName !== '' && <Text>{documentName}</Text>}
-          <Button mode="outlined" color="#1A202E" onPress={selectDocument}>
-            Upload Resume
-          </Button>
+        </View>
+        <View style={styles.uploadResumeView}>
+          <TouchableOpacity color="#000000" onPress={selectDocument}>
+            {uploadLoader ? (
+              <ActivityIndicator animating={true} color={'#000'} />
+            ) : (
+              <Text style={styles.uploadText}> Upload Resume</Text>
+            )}
+          </TouchableOpacity>
         </View>
         <View style={{marginTop: 10}}>
           {error !== '' && (
@@ -194,5 +227,22 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     paddingLeft: 5,
   },
-  uploadResumeView: {marginTop: 10},
+  uploadResumeView: {
+    marginTop: 10,
+    backgroundColor: '#fff',
+    width: 330,
+    height: 50,
+    justifyContent: 'center',
+    borderRadius: 5,
+    // marginTop: 20,
+  },
+  uploadText: {
+    fontSize: 18,
+    textAlign: 'center',
+    color: '#000',
+    textTransform: 'uppercase',
+  },
+  fileName: {
+    paddingTop: 10,
+  },
 });
