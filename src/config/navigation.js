@@ -12,6 +12,8 @@ import StudentDashboard from '../components/StudentDashboard';
 import AdminDashboard from '../components/AdminDashboard';
 import StudentDetails from '../components/StudentDetails';
 import DrawerContent from '../components/DrawerContent';
+import StudentProfile from '../components/StudentProfile'
+import PDFViewer from '../components/PDFViewer';
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -29,6 +31,8 @@ export default function MainNavigator() {
           ) : selectedRole === 'Student' ? (
             <>
               <Stack.Screen name="StudentDrawer" component={StudentDrawer} />
+              <Stack.Screen name="PDFViewer" component={PDFViewer} />
+
             </>
           ) : (
             <Stack.Screen name="CompanyDrawer" component={CompanyDrawer} />
@@ -64,6 +68,8 @@ function StudentDrawer() {
     <Drawer.Navigator drawerContent={props => <DrawerContent {...props}/>}>
       <Drawer.Screen name="Student Dashboard" component={StudentDashboard} />
       <Drawer.Screen name="Create Profile" component={StudentDetails} />
+      <Drawer.Screen name="Student Profile" component={StudentProfile} />
+
     </Drawer.Navigator>
   );
 }

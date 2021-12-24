@@ -4,6 +4,8 @@ import {DrawerContentScrollView, DrawerItem} from '@react-navigation/drawer';
 import {Avatar, Title, Text, Switch, Drawer, Button} from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Icon2 from 'react-native-vector-icons/FontAwesome';
+import Icon3 from 'react-native-vector-icons/AntDesign';
+
 import {removeData} from '../../store/action';
 import {useDispatch} from 'react-redux';
 import {useSelector} from 'react-redux';
@@ -41,15 +43,25 @@ export default function DrawerContent(props) {
               onPress={DrawerScreenDecider}
             />
             {selectedRole === 'Student' && (
-              <DrawerItem
-                icon={({color, size}) => (
-                  <Icon2 name="pencil-square-o" color={color} size={size} />
-                )}
-                label="Create Profile"
-                onPress={() => {
-                  props.navigation.navigate('Create Profile');
-                }}
+              <>
+                <DrawerItem  icon={({color, size}) => (
+                <Icon3 name="user" color={color} size={size} />
+              )}
+              label="Profile" 
+              onPress={() => {
+                props.navigation.navigate('Student Profile');
+              }}
               />
+                <DrawerItem
+                  icon={({color, size}) => (
+                    <Icon2 name="pencil-square-o" color={color} size={size} />
+                  )}
+                  label="Create Profile"
+                  onPress={() => {
+                    props.navigation.navigate('Create Profile');
+                  }}
+                />
+              </>
             )}
 
             <DrawerItem
