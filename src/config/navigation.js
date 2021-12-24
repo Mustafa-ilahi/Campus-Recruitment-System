@@ -12,8 +12,9 @@ import StudentDashboard from '../components/StudentDashboard';
 import AdminDashboard from '../components/AdminDashboard';
 import StudentDetails from '../components/StudentDetails';
 import DrawerContent from '../components/DrawerContent';
-import StudentProfile from '../components/StudentProfile'
+import StudentProfile from '../components/StudentProfile';
 import PDFViewer from '../components/PDFViewer';
+import SelectedStudent from '../components/SelectedStudent';
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -32,10 +33,17 @@ export default function MainNavigator() {
             <>
               <Stack.Screen name="StudentDrawer" component={StudentDrawer} />
               <Stack.Screen name="PDFViewer" component={PDFViewer} />
-
             </>
           ) : (
-            <Stack.Screen name="CompanyDrawer" component={CompanyDrawer} />
+            <>
+              <Stack.Screen name="CompanyDrawer" component={CompanyDrawer} />
+              <Stack.Screen
+                name="SelectedStudent"
+                component={SelectedStudent}
+              />
+              <Stack.Screen name="PDFViewer" component={PDFViewer} />
+
+            </>
           )
         ) : (
           <Stack.Screen name="Auth" component={AuthNavigator} />
@@ -57,7 +65,7 @@ function AuthNavigator() {
 
 function AdminDrawer() {
   return (
-    <Drawer.Navigator drawerContent={props => <DrawerContent {...props}/>}>
+    <Drawer.Navigator drawerContent={props => <DrawerContent {...props} />}>
       <Drawer.Screen name="Admin Dashboard" component={AdminDashboard} />
     </Drawer.Navigator>
   );
@@ -65,17 +73,16 @@ function AdminDrawer() {
 
 function StudentDrawer() {
   return (
-    <Drawer.Navigator drawerContent={props => <DrawerContent {...props}/>}>
+    <Drawer.Navigator drawerContent={props => <DrawerContent {...props} />}>
       <Drawer.Screen name="Student Dashboard" component={StudentDashboard} />
       <Drawer.Screen name="Create Profile" component={StudentDetails} />
       <Drawer.Screen name="Student Profile" component={StudentProfile} />
-
     </Drawer.Navigator>
   );
 }
 function CompanyDrawer() {
   return (
-    <Drawer.Navigator drawerContent={props => <DrawerContent {...props}/>}>
+    <Drawer.Navigator drawerContent={props => <DrawerContent {...props} />}>
       <Drawer.Screen name="Company Dashboard" component={CompanyDashboard} />
     </Drawer.Navigator>
   );
