@@ -15,6 +15,7 @@ import DrawerContent from '../components/DrawerContent';
 import StudentProfile from '../components/StudentProfile';
 import PDFViewer from '../components/PDFViewer';
 import SelectedStudent from '../components/SelectedStudent';
+import JobPost from '../components/JobPost';
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -84,6 +85,7 @@ function CompanyDrawer() {
   return (
     <Drawer.Navigator drawerContent={props => <DrawerContent {...props} />}>
       <Drawer.Screen name="Company Dashboard" component={CompanyDashboard} />
+      <Drawer.Screen name="Vacancy Details" component={JobPost} />
     </Drawer.Navigator>
   );
 }

@@ -44,14 +44,15 @@ export default function DrawerContent(props) {
             />
             {selectedRole === 'Student' && (
               <>
-                <DrawerItem  icon={({color, size}) => (
-                <Icon3 name="user" color={color} size={size} />
-              )}
-              label="Profile" 
-              onPress={() => {
-                props.navigation.navigate('Student Profile');
-              }}
-              />
+                <DrawerItem
+                  icon={({color, size}) => (
+                    <Icon3 name="user" color={color} size={size} />
+                  )}
+                  label="Profile"
+                  onPress={() => {
+                    props.navigation.navigate('Student Profile');
+                  }}
+                />
                 <DrawerItem
                   icon={({color, size}) => (
                     <Icon2 name="pencil-square-o" color={color} size={size} />
@@ -64,6 +65,20 @@ export default function DrawerContent(props) {
               </>
             )}
 
+            {selectedRole === 'Company' && (
+              <>
+               
+                <DrawerItem
+                  icon={({color, size}) => (
+                    <Icon2 name="pencil-square-o" color={color} size={size} />
+                  )}
+                  label="Post a Job"
+                  onPress={() => {
+                    props.navigation.navigate('Vacancy Details');
+                  }}
+                />
+              </>
+            )}
             <DrawerItem
               icon={({color, size}) => (
                 <Icon name="logout" color={color} size={size} />
