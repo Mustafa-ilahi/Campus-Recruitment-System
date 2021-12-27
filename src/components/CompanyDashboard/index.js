@@ -6,7 +6,6 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Icon2 from 'react-native-vector-icons/FontAwesome';
 import Icon3 from 'react-native-vector-icons/FontAwesome5';
 import {TouchableOpacity} from 'react-native-gesture-handler';
-import SelectedStudent from '../SelectedStudent';
 export default function CompanyDashboard({navigation}) {
   const [studentRecord, setStudentRecord] = useState([]);
 
@@ -109,7 +108,6 @@ export default function CompanyDashboard({navigation}) {
                   />
                 )}
               />
-              {/* <Divider style={{borderWidth:1,borderColor:"gray"}}/> */}
             </TouchableOpacity>
           </View>
         );

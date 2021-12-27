@@ -10,12 +10,9 @@ import {
 import {Modal, Portal, Provider} from 'react-native-paper';
 
 import {Divider, Drawer, List} from 'react-native-paper';
-import firestore from '@react-native-firebase/firestore';
-import {useSelector} from 'react-redux';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Icon2 from 'react-native-vector-icons/FontAwesome';
 import Icon3 from 'react-native-vector-icons/FontAwesome5';
-// import RNFetchBlob from 'rn-fetch-blob';
 
 export default function SelectedStudent({navigation, route}) {
   const studentDetails = route.params.studentDetails;

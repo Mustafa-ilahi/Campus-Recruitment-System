@@ -5,6 +5,7 @@ import firestore from '@react-native-firebase/firestore';
 
 export default function JobPost({navigation}) {
   const [companyName, setCompanyName] = useState('');
+  const [companyEmail, setCompanyEmail] = useState('');
   const [jobTitle, setJobTitle] = useState('');
   const [jobDescription, setJobDescription] = useState('');
   const [hiringNum, setHiringNum] = useState('');
@@ -17,14 +18,15 @@ export default function JobPost({navigation}) {
       jobTitle !== '' &&
       jobDescription !== '' &&
       hiringNum !== '' &&
-      companyName !== ''
+      companyName !== '' && companyEmail !==''
     ) {
       setError('');
       setLoader(false);
       firestore()
-        .collection('CompnayDetails')
+        .collection('CompanyDetails')
         .add({
           companyName: companyName,
+          companyEmail:companyEmail,
           jobTitle: jobTitle,
           jobDescription: jobDescription,
           hiringNum: hiringNum,
@@ -38,6 +40,9 @@ export default function JobPost({navigation}) {
         });
     } else if (companyName == '') {
       setError('Company name is required');
+      setLoader(false);
+    }else if (companyEmail == '') {
+      setError('Company email is required');
       setLoader(false);
     } else if (jobTitle == '') {
       setError('Job Title is required');
@@ -58,6 +63,14 @@ export default function JobPost({navigation}) {
         activeUnderlineColor="#000"
         onChangeText={text => setCompanyName(text)}
         value={companyName}
+        underlineColor="transparent"
+        style={{margin: 10}}
+      />
+        <TextInput
+        label="Company Email"
+        activeUnderlineColor="#000"
+        onChangeText={text => setCompanyEmail(text)}
+        value={companyEmail}
         underlineColor="transparent"
         style={{margin: 10}}
       />

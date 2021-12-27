@@ -16,6 +16,7 @@ import StudentProfile from '../components/StudentProfile';
 import PDFViewer from '../components/PDFViewer';
 import SelectedStudent from '../components/SelectedStudent';
 import JobPost from '../components/JobPost';
+import SelectedCompany from '../components/SelectedCompany';
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -34,6 +35,8 @@ export default function MainNavigator() {
             <>
               <Stack.Screen name="StudentDrawer" component={StudentDrawer} />
               <Stack.Screen name="PDFViewer" component={PDFViewer} />
+              <Stack.Screen name="SelectedCompany" component={SelectedCompany} />
+
             </>
           ) : (
             <>

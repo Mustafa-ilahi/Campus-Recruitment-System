@@ -12,6 +12,7 @@ export default function StudentDetails({navigation}) {
   const [documentUri, setDocumentUri] = useState('');
   const [fullName, setFullName] = useState('');
   const [qualification, setQualification] = useState('');
+  const [profession, setProfession] = useState('');
   const [marks, setMarks] = useState('');
   const [loader, setLoader] = useState(false);
   const [uploadLoader, setUploadLoader] = useState(false);
@@ -80,6 +81,7 @@ export default function StudentDetails({navigation}) {
     if (
       fullName !== '' &&
       qualification !== '' &&
+      profession !== '' &&
       marks !== '' &&
       documentName !== ''
     ) {
@@ -92,6 +94,7 @@ export default function StudentDetails({navigation}) {
           .add({
             name: fullName,
             qualification: qualification,
+            profession: profession,
             marks: marks,
             email: isSignedIn,
             fileName: selectedDocument.fileName,
@@ -107,6 +110,10 @@ export default function StudentDetails({navigation}) {
       setLoader(false);
     } else if (qualification == '') {
       setError('Qualification is required');
+      setLoader(false);
+    }
+    else if (profession == '') {
+      setError('Profession is required');
       setLoader(false);
     } else if (marks == '') {
       setError('Marks is required');
@@ -135,6 +142,14 @@ export default function StudentDetails({navigation}) {
           onChangeText={text => setQualification(text)}
           value={qualification}
           style={styles.qualification}
+          underlineColor="transparent"
+        />
+        <TextInput
+          label="Profession"
+          activeUnderlineColor="#000"
+          onChangeText={text => setProfession(text)}
+          value={profession}
+          style={styles.profession}
           underlineColor="transparent"
         />
         <TextInput
@@ -205,6 +220,9 @@ const styles = StyleSheet.create({
   qualification: {
     marginBottom: 20,
     marginTop: 20,
+  },
+  profession: {
+    marginBottom: 20,
   },
   addDetails: {
     backgroundColor: '#1A202E',
