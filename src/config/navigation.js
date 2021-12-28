@@ -30,13 +30,25 @@ export default function MainNavigator() {
       <Stack.Navigator screenOptions={{headerShown: false}}>
         {isSignedIn ? (
           selectedRole === 'Admin' ? (
+            <>
             <Stack.Screen name="AdminDrawer" component={AdminDrawer} />
+            <Stack.Screen name="SelectedCompany" component={SelectedCompany} />
+            <Stack.Screen
+                name="SelectedStudent"
+                component={SelectedStudent}
+              />
+              <Stack.Screen name="PDFViewer" component={PDFViewer} />
+
+            </>
           ) : selectedRole === 'Student' ? (
             <>
               <Stack.Screen name="StudentDrawer" component={StudentDrawer} />
               <Stack.Screen name="PDFViewer" component={PDFViewer} />
               <Stack.Screen name="SelectedCompany" component={SelectedCompany} />
-
+              <Stack.Screen
+                name="SelectedStudent"
+                component={SelectedStudent}
+              />
             </>
           ) : (
             <>

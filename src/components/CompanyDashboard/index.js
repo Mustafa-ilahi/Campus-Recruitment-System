@@ -26,7 +26,7 @@ export default function CompanyDashboard({navigation}) {
     <View
       style={{
         backgroundColor: '#fff',
-        height: '100%',
+        // height: '100%',
         paddingTop: 0,
         paddingLeft: 10,
         paddingRight: 10,

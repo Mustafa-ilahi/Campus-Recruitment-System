@@ -1,12 +1,12 @@
 import React from 'react';
-import {View, Text, Button} from 'react-native';
-import {removeData} from '../../store/action';
-
+import {View, Text, Button, ScrollView} from 'react-native';
+import StudentDashboard from '../StudentDashboard';
+import CompanyDashboard from '../CompanyDashboard';
 export default function AdminDashboard({navigation}) {
- 
   return (
-    <View>
-      <Text>Admin Dashboard here</Text>
-    </View>
+    <ScrollView>
+      <StudentDashboard navigation={navigation}/>
+      <CompanyDashboard navigation={navigation}/>
+    </ScrollView>
   );
 }
