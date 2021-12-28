@@ -6,8 +6,10 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Icon2 from 'react-native-vector-icons/FontAwesome';
 import Icon3 from 'react-native-vector-icons/FontAwesome5';
 import {TouchableOpacity} from 'react-native-gesture-handler';
+import { useSelector } from 'react-redux';
 export default function CompanyDashboard({navigation}) {
   const [studentRecord, setStudentRecord] = useState([]);
+  const role = useSelector(state => state.role);
 
   useEffect(() => {
     let tempData = [];
@@ -66,6 +68,27 @@ export default function CompanyDashboard({navigation}) {
               shadowOpacity: 0.25,
               elevation: 10,
             }}>
+               {role == 'Admin' && (
+              <View
+                style={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  justifyContent: 'flex-end',
+                }}>
+                <Icon
+                  name="pencil-circle"
+                  size={25}
+                  color={'#000'}
+                  onPress={() => alert('edit')}
+                />
+                <Icon
+                  name="delete-circle"
+                  size={25}
+                  color={'#000'}
+                  onPress={() => alert('delete')}
+                />
+              </View>
+            )}
             <TouchableOpacity
               onPress={() =>
                 navigation.navigate('SelectedStudent', {

@@ -1,12 +1,18 @@
-import React, {useEffect, useState} from 'react';
+import React, {Fragment, useEffect, useState} from 'react';
 import firestore from '@react-native-firebase/firestore';
 import {View, Text, StyleSheet, TouchableOpacity, Image} from 'react-native';
 import {Divider, Drawer, List} from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Icon2 from 'react-native-vector-icons/MaterialIcons';
 
+import {useSelector} from 'react-redux';
+import {Modal, Portal, Provider} from 'react-native-paper';
+
 export default function StudentDashboard({navigation}) {
+  
+
   const [companyRecord, setCompanyRecord] = useState([]);
+  const role = useSelector(state => state.role);
 
   useEffect(() => {
     let tempData = [];
@@ -21,6 +27,15 @@ export default function StudentDashboard({navigation}) {
         // console.log(tempData);
       });
   }, []);
+
+  const editDetails = (item,index) =>{
+    console.log("item",item);
+    console.log("index",index);
+  }
+  const deleteDetails = (item,index) =>{
+    console.log("item",item);
+    console.log("index",index);
+  }
   return (
     <View
       style={{
@@ -52,7 +67,7 @@ export default function StudentDashboard({navigation}) {
           />
         </List.Subheader>
       </List.Section>
-      {companyRecord?.map(item => {
+      {companyRecord?.map((item,index) => {
         return (
           <View
             style={{
@@ -65,14 +80,36 @@ export default function StudentDashboard({navigation}) {
               shadowColor: 'black',
               shadowOpacity: 0.25,
               elevation: 10,
+              zIndex: 1,
             }}>
+            {role == 'Admin' && (
+              <View
+                style={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  justifyContent: 'flex-end',
+                }}>
+                <Icon
+                  name="pencil-circle"
+                  size={25}
+                  color={'#000'}
+                  onPress={() => editDetails(item,index)}
+                />
+                <Icon
+                  name="delete-circle"
+                  size={25}
+                  color={'#000'}
+                  onPress={() => deleteDetails(item,index)}
+                />
+              </View>
+            )}
+
             <TouchableOpacity
-            onPress={() =>
-              navigation.navigate('SelectedCompany', {
-                companyDetails: item,
-              })
-            }
-            >
+              onPress={() =>
+                navigation.navigate('SelectedCompany', {
+                  companyDetails: item,
+                })
+              }>
               <List.Item
                 style={{padding: 0}}
                 title={['Company Name: ', item.companyName]}
