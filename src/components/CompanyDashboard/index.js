@@ -6,7 +6,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Icon2 from 'react-native-vector-icons/FontAwesome';
 import Icon3 from 'react-native-vector-icons/FontAwesome5';
 import {TouchableOpacity} from 'react-native-gesture-handler';
-import { useSelector } from 'react-redux';
+import {useSelector} from 'react-redux';
 export default function CompanyDashboard({navigation}) {
   const [studentRecord, setStudentRecord] = useState([]);
   const role = useSelector(state => state.role);
@@ -23,7 +23,17 @@ export default function CompanyDashboard({navigation}) {
         setStudentRecord(tempData);
       });
   }, []);
-
+  const editDetails = (item, index) => {
+    console.log('item', item);
+    console.log('index', index);
+  };
+  const deleteDetails = (item, index) => {
+    console.log('item', studentRecord);
+    // console.log('index', index);
+    let temp = [...studentRecord]
+    temp.splice(index,1)
+    console.log("temp",temp);
+  };
   return (
     <View
       style={{
@@ -54,7 +64,7 @@ export default function CompanyDashboard({navigation}) {
           />
         </List.Subheader>
       </List.Section>
-      {studentRecord?.map(item => {
+      {studentRecord?.map((item, index) => {
         return (
           <View
             style={{
@@ -68,7 +78,7 @@ export default function CompanyDashboard({navigation}) {
               shadowOpacity: 0.25,
               elevation: 10,
             }}>
-               {role == 'Admin' && (
+            {role == 'Admin' && (
               <View
                 style={{
                   display: 'flex',
@@ -79,13 +89,13 @@ export default function CompanyDashboard({navigation}) {
                   name="pencil-circle"
                   size={25}
                   color={'#000'}
-                  onPress={() => alert('edit')}
+                  onPress={() => editDetails(item, index)}
                 />
                 <Icon
                   name="delete-circle"
                   size={25}
                   color={'#000'}
-                  onPress={() => alert('delete')}
+                  onPress={() => deleteDetails(item, index)}
                 />
               </View>
             )}
@@ -96,6 +106,7 @@ export default function CompanyDashboard({navigation}) {
                 })
               }>
               <List.Item
+                key={index}
                 style={{padding: 0}}
                 title={['Name: ', item.name]}
                 left={() => (

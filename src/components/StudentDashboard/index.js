@@ -1,4 +1,5 @@
 import React, {Fragment, useEffect, useState} from 'react';
+import {firebase} from '@react-native-firebase/firestore';
 import firestore from '@react-native-firebase/firestore';
 import {View, Text, StyleSheet, TouchableOpacity, Image} from 'react-native';
 import {Divider, Drawer, List} from 'react-native-paper';
@@ -9,8 +10,6 @@ import {useSelector} from 'react-redux';
 import {Modal, Portal, Provider} from 'react-native-paper';
 
 export default function StudentDashboard({navigation}) {
-  
-
   const [companyRecord, setCompanyRecord] = useState([]);
   const role = useSelector(state => state.role);
 
@@ -28,14 +27,17 @@ export default function StudentDashboard({navigation}) {
       });
   }, []);
 
-  const editDetails = (item,index) =>{
-    console.log("item",item);
-    console.log("index",index);
-  }
-  const deleteDetails = (item,index) =>{
-    console.log("item",item);
-    console.log("index",index);
-  }
+  const editDetails = (item, index) => {
+    console.log('item', item);
+    console.log('index', index);
+  };
+  const deleteDetails = (item, index) => {
+    let temp = [...companyRecord];
+    temp.splice(index, 1);
+    setCompanyRecord(temp);
+    // console.log(item.id);
+    firestore().collection('CompanyDetails').doc(item.id).delete();
+  };
   return (
     <View
       style={{
@@ -67,7 +69,7 @@ export default function StudentDashboard({navigation}) {
           />
         </List.Subheader>
       </List.Section>
-      {companyRecord?.map((item,index) => {
+      {companyRecord?.map((item, index) => {
         return (
           <View
             style={{
@@ -93,13 +95,13 @@ export default function StudentDashboard({navigation}) {
                   name="pencil-circle"
                   size={25}
                   color={'#000'}
-                  onPress={() => editDetails(item,index)}
+                  onPress={() => editDetails(item, index)}
                 />
                 <Icon
                   name="delete-circle"
                   size={25}
                   color={'#000'}
-                  onPress={() => deleteDetails(item,index)}
+                  onPress={() => deleteDetails(item, index)}
                 />
               </View>
             )}
@@ -111,6 +113,7 @@ export default function StudentDashboard({navigation}) {
                 })
               }>
               <List.Item
+                key={index}
                 style={{padding: 0}}
                 title={['Company Name: ', item.companyName]}
                 left={() => (
