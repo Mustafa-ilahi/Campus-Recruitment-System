@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {ActivityIndicator, Button, TextInput} from 'react-native-paper';
 import firestore from '@react-native-firebase/firestore';
@@ -7,7 +7,7 @@ import RNFetchBlob from 'rn-fetch-blob';
 import FilePickerManager from 'react-native-file-picker';
 import {useSelector} from 'react-redux';
 
-export default function StudentDetails({navigation}) {
+export default function StudentDetails({navigation, route}) {
   const [documentName, setDocumentName] = useState('');
   const [documentUri, setDocumentUri] = useState('');
   const [fullName, setFullName] = useState('');
@@ -19,7 +19,27 @@ export default function StudentDetails({navigation}) {
   const [error, setError] = useState('');
   const [downloadUrl, setDownloadUrl] = useState('');
   const [selectedDocument, setSelectedDocument] = useState('');
+  const [editStatus, setEditStatus] = useState(false);
+  const [id, setId] = useState('');
+
   const isSignedIn = useSelector(state => state.email);
+  const role = useSelector(state => state.role);
+  // studentData
+
+  useEffect(() => {
+    if (role == 'Admin') {
+      const editData = route.params.studentData;
+      console.log(editData);
+      setFullName(editData.name);
+      setQualification(editData.qualification);
+      setProfession(editData.profession);
+      setMarks(editData.marks);
+      setId(editData.id);
+      setDocumentName(editData.fileName);
+      setDownloadUrl(editData.fileURL);
+      setEditStatus(true);
+    }
+  }, []);
 
   const selectDocument = async () => {
     FilePickerManager.showFilePicker(null, async response => {
@@ -111,8 +131,7 @@ export default function StudentDetails({navigation}) {
     } else if (qualification == '') {
       setError('Qualification is required');
       setLoader(false);
-    }
-    else if (profession == '') {
+    } else if (profession == '') {
       setError('Profession is required');
       setLoader(false);
     } else if (marks == '') {
@@ -124,6 +143,57 @@ export default function StudentDetails({navigation}) {
     }
   };
 
+  const updateDetails = ()=>{
+    setLoader(true);
+    if(role == 'Admin'){
+
+    if (
+      fullName !== '' &&
+      qualification !== '' &&
+      profession !== '' &&
+      marks !== '' &&
+      documentName !== ''
+    ) {
+      setError('');
+      setLoader(false);
+
+      if (downloadUrl !== '' && selectedDocument !== '') {
+        firestore()
+          .collection('StudentDetails').doc(id)
+          .update({
+            name: fullName,
+            qualification: qualification,
+            profession: profession,
+            marks: marks,
+            email: isSignedIn,
+            fileName: selectedDocument.fileName,
+            fileType: selectedDocument.type,
+            fileURL: downloadUrl,
+          })
+          .then(() => {
+            navigation.navigate('Admin Dashboard');
+
+          });
+      }
+    } else if (fullName == '') {
+      setError('Name is required');
+      setLoader(false);
+    } else if (qualification == '') {
+      setError('Qualification is required');
+      setLoader(false);
+    } else if (profession == '') {
+      setError('Profession is required');
+      setLoader(false);
+    } else if (marks == '') {
+      setError('Marks is required');
+      setLoader(false);
+    } else if (documentName == '') {
+      setError('Resume is required');
+      setLoader(false);
+    }
+  }
+
+  }
   return (
     <View style={styles.container}>
       <Text style={styles.createProfile}>Create Profile</Text>
@@ -187,13 +257,23 @@ export default function StudentDetails({navigation}) {
         </View>
       </View>
       <View style={styles.addDetails}>
-        <TouchableOpacity onPress={addDetails}>
-          {loader ? (
-            <ActivityIndicator animating={true} color={'#fff'} />
-          ) : (
-            <Text style={styles.addDetailsText}>Add Details</Text>
-          )}
-        </TouchableOpacity>
+        {editStatus ? (
+          <TouchableOpacity onPress={updateDetails}>
+            {loader ? (
+              <ActivityIndicator animating={true} color={'#fff'} />
+            ) : (
+              <Text style={styles.addDetailsText}>Update Details</Text>
+            )}
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity onPress={addDetails}>
+            {loader ? (
+              <ActivityIndicator animating={true} color={'#fff'} />
+            ) : (
+              <Text style={styles.addDetailsText}>Add Details</Text>
+            )}
+          </TouchableOpacity>
+        )}
       </View>
     </View>
   );

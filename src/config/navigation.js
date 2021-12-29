@@ -38,6 +38,9 @@ export default function MainNavigator() {
                 component={SelectedStudent}
               />
               <Stack.Screen name="PDFViewer" component={PDFViewer} />
+              <Stack.Screen name="Vacancy Details" component={JobPost} />
+              <Stack.Screen name="Create Profile" component={StudentDetails} />
+              
 
             </>
           ) : selectedRole === 'Student' ? (

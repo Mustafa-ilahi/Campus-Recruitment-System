@@ -1,9 +1,10 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import {ActivityIndicator, TextInput} from 'react-native-paper';
 import firestore from '@react-native-firebase/firestore';
+import {useSelector} from 'react-redux';
 
-export default function JobPost({navigation}) {
+export default function JobPost({navigation, route}) {
   const [companyName, setCompanyName] = useState('');
   const [companyEmail, setCompanyEmail] = useState('');
   const [jobTitle, setJobTitle] = useState('');
@@ -11,6 +12,23 @@ export default function JobPost({navigation}) {
   const [hiringNum, setHiringNum] = useState('');
   const [loader, setLoader] = useState(false);
   const [error, setError] = useState('');
+  const [editStatus, setEditStatus] = useState(false);
+  const [id, setId] = useState('');
+  const role = useSelector(state => state.role);
+
+  useEffect(() => {
+    if (role == 'Admin') {
+      const editData = route.params.companyDetails;
+      console.log(editData.companyName);
+      setCompanyEmail(editData.email);
+      setJobTitle(editData.jobTitle);
+      setJobDescription(editData.jobDescription);
+      setHiringNum(editData.hiringNum);
+      setCompanyName(editData.companyName);
+      setEditStatus(true);
+      setId(editData.id);
+    }
+  }, []);
 
   const addDetails = () => {
     setLoader(true);
@@ -18,7 +36,8 @@ export default function JobPost({navigation}) {
       jobTitle !== '' &&
       jobDescription !== '' &&
       hiringNum !== '' &&
-      companyName !== '' && companyEmail !==''
+      companyName !== '' &&
+      companyEmail !== ''
     ) {
       setError('');
       setLoader(false);
@@ -26,22 +45,24 @@ export default function JobPost({navigation}) {
         .collection('CompanyDetails')
         .add({
           companyName: companyName,
-          companyEmail:companyEmail,
+          companyEmail: companyEmail,
           jobTitle: jobTitle,
           jobDescription: jobDescription,
           hiringNum: hiringNum,
         })
         .then(() => {
           navigation.navigate('Company Dashboard');
-          setCompanyName('')
-          setJobTitle('')
-          setJobDescription('')
-          setHiringNum('')
+          setCompanyName('');
+          setJobTitle('');
+          setJobDescription('');
+          setHiringNum('');
+          setCompanyEmail('')
+
         });
     } else if (companyName == '') {
       setError('Company name is required');
       setLoader(false);
-    }else if (companyEmail == '') {
+    } else if (companyEmail == '') {
       setError('Company email is required');
       setLoader(false);
     } else if (jobTitle == '') {
@@ -55,6 +76,56 @@ export default function JobPost({navigation}) {
       setLoader(false);
     }
   };
+
+  const updateDetails = () => {
+    setLoader(true);
+    if (role == 'Admin') {
+      if (
+        jobTitle !== '' &&
+        jobDescription !== '' &&
+        hiringNum !== '' &&
+        companyName !== '' &&
+        companyEmail !== ''
+      ) {
+        setError('');
+        setLoader(false);
+        console.log(id);
+        firestore()
+          .collection('CompanyDetails')
+          .doc(id)
+          .set({
+            companyName: companyName,
+            companyEmail: companyEmail,
+            jobTitle: jobTitle,
+            jobDescription: jobDescription,
+            hiringNum: hiringNum,
+          })
+          .then(() => {
+            navigation.navigate('Admin Dashboard');
+            setCompanyName('');
+            setJobTitle('');
+            setJobDescription('');
+            setHiringNum('');
+            setCompanyEmail('')
+          });
+      } else if (companyName == '') {
+        setError('Company name is required');
+        setLoader(false);
+      } else if (companyEmail == '') {
+        setError('Company email is required');
+        setLoader(false);
+      } else if (jobTitle == '') {
+        setError('Job Title is required');
+        setLoader(false);
+      } else if (jobDescription == '') {
+        setError('Job Description is required');
+        setLoader(false);
+      } else if (hiringNum == '') {
+        setError('No of hiring is required');
+        setLoader(false);
+      }
+    }
+  };
   return (
     <View style={styles.container}>
       <Text style={styles.vacancyDetails}>Job Details</Text>
@@ -66,7 +137,7 @@ export default function JobPost({navigation}) {
         underlineColor="transparent"
         style={{margin: 10}}
       />
-        <TextInput
+      <TextInput
         label="Company Email"
         activeUnderlineColor="#000"
         onChangeText={text => setCompanyEmail(text)}
@@ -113,13 +184,23 @@ export default function JobPost({navigation}) {
         )}
       </View>
       <View style={styles.addDetails}>
-        <TouchableOpacity onPress={addDetails}>
-          {loader ? (
-            <ActivityIndicator animating={true} color={'#fff'} />
-          ) : (
-            <Text style={styles.addDetailsText}>Add Details</Text>
-          )}
-        </TouchableOpacity>
+        {editStatus ? (
+          <TouchableOpacity onPress={updateDetails}>
+            {loader ? (
+              <ActivityIndicator animating={true} color={'#fff'} />
+            ) : (
+              <Text style={styles.addDetailsText}>Update Details</Text>
+            )}
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity onPress={addDetails}>
+            {loader ? (
+              <ActivityIndicator animating={true} color={'#fff'} />
+            ) : (
+              <Text style={styles.addDetailsText}>Add Details</Text>
+            )}
+          </TouchableOpacity>
+        )}
       </View>
     </View>
   );

@@ -28,14 +28,16 @@ export default function StudentDashboard({navigation}) {
   }, []);
 
   const editDetails = (item, index) => {
-    console.log('item', item);
-    console.log('index', index);
+    // console.log('item', item);
+    // console.log('index', index);
+    navigation.navigate("Vacancy Details",{
+      companyDetails: item
+    })
   };
   const deleteDetails = (item, index) => {
     let temp = [...companyRecord];
     temp.splice(index, 1);
     setCompanyRecord(temp);
-    // console.log(item.id);
     firestore().collection('CompanyDetails').doc(item.id).delete();
   };
   return (

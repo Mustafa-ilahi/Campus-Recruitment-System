@@ -24,15 +24,23 @@ export default function CompanyDashboard({navigation}) {
       });
   }, []);
   const editDetails = (item, index) => {
-    console.log('item', item);
-    console.log('index', index);
+    // console.log('item', item);
+    // console.log('index', index);
+    navigation.navigate('Create Profile', {
+      studentData: item,
+    });
   };
   const deleteDetails = (item, index) => {
-    console.log('item', studentRecord);
-    // console.log('index', index);
-    let temp = [...studentRecord]
-    temp.splice(index,1)
-    console.log("temp",temp);
+    let temp = [...studentRecord];
+    temp.splice(index, 1);
+    setStudentRecord(temp);
+    firestore()
+      .collection('StudentDetails')
+      .doc(item.id)
+      .delete()
+      .then(() => {
+        alert('Data Deleted Successfully');
+      });
   };
   return (
     <View
